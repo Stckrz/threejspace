@@ -2,17 +2,36 @@ import './style.css'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import { GLTFLoader } from 'three/examples/jsm/Addons.js';
-import { addStar, addSun } from './utils/maker';
+import { addStar, addSun, randomHexColorCode } from './utils/maker';
 import { Ship } from './Classes/Ship';
-import { VoxelGrid } from './Classes/VoxelGrid';
+import { VectorEnum, VoxelGrid } from './Classes/VoxelGrid';
+import { PlayButton } from './Classes/UI/PlayButton';
+import { NowPlaying } from './Classes/UI/NowPlaying';
 
+/////////////////////////////////////////////////UI///////////////////////////////////////////
 const ui = document.querySelector('#ui');
 const thingbox = document.createElement('div');
 thingbox.classList.add('thingbox')
 if (ui) {
 	ui.appendChild(thingbox)
-}
 
+	const audioControls = document.createElement('div')
+	audioControls.classList.add('audioControls');
+	ui.appendChild(audioControls)
+
+	const audioPlayer = document.createElement('audio');
+	const audioSource = document.createElement('source');
+	audioSource.type = "audio/mpeg";
+	audioSource.src = "http://localhost:3000/stream";
+	audioControls.appendChild(audioPlayer)
+	audioPlayer.appendChild(audioSource);
+
+	const playButton = new PlayButton(audioPlayer, audioControls)
+	const nowPlaying = new NowPlaying(thingbox)
+	nowPlaying.setupListeners(audioPlayer);
+
+}
+/////////////////////////////////////////////////UI///////////////////////////////////////////
 
 
 //instantiate the scene and camera.
@@ -43,7 +62,7 @@ const boxGeometry = new THREE.BoxGeometry(10, 10, 10)
 const material = new THREE.MeshStandardMaterial({ color: 0xFF6447 });
 const box = new THREE.Mesh(boxGeometry, material)
 box.translateY(10)
-// scene.add(box)
+scene.add(box)
 
 //adds spotlight and parents it under the camera.
 const spotLight = new THREE.SpotLight(0xffffff, 2, 1, 10);
@@ -77,37 +96,58 @@ grid1.addVoxel(0, 0, 0, 0xff0000);
 grid1.addVoxel(1, 0, 0, 0xff0000);
 grid1.addVoxel(2, 0, 0, 0xff0000);
 grid1.addVoxel(3, 0, 0, 0xff0000);
-grid1.addVoxel(4, 0, 0, 0xff0000);
-grid1.addVoxel(4, 1, 0, 0xff0000);
-grid1.addVoxel(4, 2, 0, 0xff0000);
-grid1.addVoxel(4, 3, 0, 0xff0000);
-grid1.addVoxel(4, 4, 0, 0xff0000);
-grid1.addVoxel(0, 1, 0, 0xff0000);
-grid1.addVoxel(0, 2, 0, 0xff0000);
-grid1.addVoxel(0, 3, 0, 0xff0000);
-grid1.addVoxel(0, 4, 0, 0xff0000);
-grid1.addVoxel(0, 0, 1, 0xff0000);
-grid1.addVoxel(0, 0, 2, 0xff0000);
-grid1.addVoxel(0, 0, 3, 0xff0000);
-grid1.addVoxel(0, 0, 4, 0xff0000);
-grid1.addVoxel(2, 2, 2, 0xff0000);
-grid1.updateVoxelColor(2, 2, 2, 0xffffff);
+grid1.addVoxel(4, 0, 0, 0xff0000)
+
+// grid1.updateVoxelColor(2, 2, 2, 0xffffff);
+let counter = 0;
+
+// const render = function() {
+// 	requestAnimationFrame(render);
+//
+// 	if (counter <= 100) {
+// 		box.position.x += 0.01;
+// 		counter++;
+// 	}
+//
+// 	if (counter > 100) {
+// 		box.position.x -= 0.01;
+// 		counter++;
+// 	}
+//
+// 	if (counter > 200) {
+// 		counter = 0;
+//
+// 		// if (grid1.voxels[0].position !== grid1.voxels[0].key) {
+// 		// grid1.lerpVoxel(grid1.voxels[0].voxel, VectorEnum.X)
+// 		// }
+// 		grid1.voxels[0].returnPosition();
+// 	}
+// 	renderer.render(scene, camera);
+//
+// }
+// render()
 function animate() {
 	requestAnimationFrame(animate);
-	// box.rotation.x += 0.005;
-	// box.rotation.y += 0.001;
-	// box.rotation.z += 0.01;
-	grid1.lerpVoxel(2, 2, 2);
-	//
-	ship.update()
-	// ship.rotation.y += 0.005
-	// ship.rotation.z += 0.002
-	//
-	// ship.rotation.x += 0.01
-	// box.position.x = THREE.MathUtils.lerp(box.position.x, box.position.x + 1, 0.05)
-	// camera.position.z = THREE.MathUtils.lerp(camera.position.z, camera.position.z - 1, 0.05)
-	// pointLight.position.set(camera.position.x, camera.position.y, camera.position.z - 5)
 
+	for (const star of starArray) {
+		if (counter <= 500) {
+			star.position.x += 0.01;
+			box.position.x += 0.0001;
+		}
+		if (counter > 500) {
+			star.position.x -= 0.01;
+			box.position.x -= 0.0001;
+		}
+		if (counter > 1000) {
+			counter = 0;
+			star.material.color.set(randomHexColorCode())
+		grid1.voxels[0].returnPosition();
+		}
+	}
+
+	grid1.lerpVoxel(grid1.voxels[0].voxel, VectorEnum.Y)
+	ship.update()
+	counter++
 	controls.update();
 
 	renderer.render(scene, camera);

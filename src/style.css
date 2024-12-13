@@ -3,8 +3,11 @@ canvas {
 	top: 0;
 	left: 0;
 }
-.ui{
+
+.ui {
 	position: fixed;
+	align-items: flex-end;
+	display: flex;
 	top: 0;
 	left: 0;
 	height: 100vh;
@@ -12,10 +15,43 @@ canvas {
 	z-index: 2;
 	pointer-events: none;
 }
-.thingbox{
+
+.thingbox {
+	display: flex;
 	margin: 10px;
+	padding: 5px;
 	border-radius: 0.5em;
+	/* height: 45px; */
+	/* width: 45px; */
+	width: auto;
+	color: white;
+	border: 1px solid green;
+}
+
+.audioControls {
+	display: flex;
+	margin: 10px;
 	height: 45px;
 	width: 45px;
+	border-radius: 0.5em;
+	/* z-index: 500; */
 	border: 1px solid green;
+	background: transparent;
+}
+
+.playButton{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: transparent;
+	color: green;
+	border: none;
+	pointer-events: auto;
+}
+
+
+
+.metadataContainer{
+	display: flex;
+	gap: 10px;
 }
