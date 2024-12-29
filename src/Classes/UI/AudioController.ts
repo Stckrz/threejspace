@@ -1,45 +1,54 @@
-export class PlayButton {
+export class AudioController {
 	audioPlayer: HTMLAudioElement;
-	parent: HTMLElement;
+	parent: Element;
 	playStatus: boolean;
 	textContent: string;
 	playButton: HTMLButtonElement;
+	dataArray: Uint8Array;
+	analyser: AnalyserNode;
 	constructor(
-		audioPlayer: HTMLAudioElement,
-		parent: HTMLElement,
+		parent: Element,
 	) {
-		this.audioPlayer = audioPlayer;
 		this.parent = parent;
 		this.textContent = "Play";
 		this.playStatus = false;
+
+		const audioControls = document.createElement('div')
+		audioControls.classList.add('audioControls');
+		parent.appendChild(audioControls)
+
 		this.playButton = document.createElement("button");
 		this.playButton.textContent = this.textContent;
 		this.playButton.classList.add('playButton');
-		parent.appendChild(this.playButton);
-		this.instantiateListeners();
+		audioControls.appendChild(this.playButton);
 		this.playButton.addEventListener('click', () => {
-			// if (this.playStatus) {
-			// 	audioPlayer.pause();
-			// } else {
-			// 	audioPlayer.play();
-			// }
 		});
+
+		this.audioPlayer = document.createElement('audio');
+		this.audioPlayer.crossOrigin = 'anonymous'; // Allow cross-origin audio processing
+		const audioSource = document.createElement('source');
+		audioSource.type = "audio/mpeg";
+		audioSource.src = "http://localhost:3000/stream";
+		audioControls.appendChild(this.audioPlayer)
+		this.audioPlayer.appendChild(audioSource);
+
+		this.instantiateListeners();
+
+		//Set up audio analyser
+		const audioContext = new (window.AudioContext)();
+		const track = audioContext.createMediaElementSource(this.audioPlayer);
+		this.analyser = audioContext.createAnalyser();
+		track.connect(this.analyser);
+		this.analyser.connect(audioContext.destination);
+		// Configure the analyser
+		this.analyser.fftSize = 128;
+		const bufferLength = this.analyser.frequencyBinCount;
+		this.dataArray = new Uint8Array(bufferLength);
 	}
+
 	private instantiateListeners() {
 
 		this.playButton.addEventListener('click', () => this.toggleStream());
-		// 	this.audioPlayer.addEventListener('play', () => {
-		// 		console.log("play1")
-		// 		this.playStatus = true;
-		// 		this.playButton.textContent = 'Pause';
-		// 		this.audioPlayer.dispatchEvent(new CustomEvent('play-started'));
-		// 	});
-		//
-		// 	this.audioPlayer.addEventListener('play', () => { this.updatePlayStatus(true); console.log("play2") });
-		// 	this.audioPlayer.addEventListener('pause', () => {
-		// 		this.updatePlayStatus(true); 
-		// 		console.log("pause") 
-		// 	});
 		this.audioPlayer.addEventListener('ended', () => {
 			console.log('ended');
 			this.reconnectStream();
@@ -49,7 +58,6 @@ export class PlayButton {
 			this.reconnectStream();
 		});
 	}
-
 
 	private toggleStream() {
 		if (this.playStatus) {
@@ -97,5 +105,8 @@ export class PlayButton {
 				this.reconnectStream(retryDelay);
 			});
 		}, retryDelay);
+	}
+	returnAudioAnalyser() {
+		return this.analyser;
 	}
 }

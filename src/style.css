@@ -55,3 +55,41 @@ canvas {
 	display: flex;
 	gap: 10px;
 }
+
+
+
+.directoryBox{
+	background-color: black;
+	align-self: flex-end;
+	width: 500px;
+}
+
+.directoryItem{
+	font-size: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: transparent;
+	color: green;
+	border: none;
+	pointer-events: auto;
+	border-radius: 0.1em;
+}
+
+.directoryItem:hover{
+	background-color: green;
+	color: white;
+}
+
+.songItem{
+	font-size: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: transparent;
+	color: green;
+	border: none;
+	pointer-events: auto;
+	border-radius: 0.1em;
+	padding: 2px;
+}

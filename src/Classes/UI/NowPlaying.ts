@@ -1,7 +1,9 @@
+import { Socket } from "socket.io-client";
 import { Metadata } from "../../Models/Metadata";
 
 export class NowPlaying {
 	parent: Element;
+	socket: Socket;
 	metadata: Metadata | null;
 	metadataContainer: HTMLElement;
 	titleDiv: HTMLElement;
@@ -9,8 +11,10 @@ export class NowPlaying {
 	albumDiv: HTMLElement;
 	constructor(
 		parent: HTMLElement,
+		socket: Socket
 	) {
 		this.parent = parent;
+		this.socket = socket;
 		this.metadata = null;
 		this.metadataContainer = document.createElement('div');
 		this.metadataContainer.classList.add('metadataContainer');
@@ -21,14 +25,20 @@ export class NowPlaying {
 		this.metadataContainer.appendChild(this.titleDiv);
 		this.metadataContainer.appendChild(this.artistDiv);
 		this.metadataContainer.appendChild(this.albumDiv);
+		this.titleDiv.textContent = "shitbutt"
 		this.getMetadata();
 	}
 
 	public async getMetadata() {
 		try {
-			const response = await fetch("http://localhost:3000/metadata");
-			const data = await response.json();
-			this.metadata = data;
+			this.socket.emit('currentSong', (data) => {
+				this.metadata = data
+				console.log("data",data)
+				this.updateNowPlaying()
+			})
+			// const response = await fetch("http://localhost:3000/metadata");
+			// const data = await response.json();
+			// this.metadata = data;
 		} catch (error) {
 			console.log(error);
 		}
