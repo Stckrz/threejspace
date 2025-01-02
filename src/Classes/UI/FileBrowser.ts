@@ -13,6 +13,7 @@ export class FileBrowser {
 	parent: Element;
 	socket: Socket
 	directoryBox: HTMLDivElement;
+	browseButtonBox: HTMLDivElement;
 	currentFilePath: string;
 	getFilesButton: HTMLButtonElement;
 	backButton: HTMLButtonElement;
@@ -33,22 +34,26 @@ export class FileBrowser {
 		this.directoryBox = document.createElement('div');
 		this.directoryBox.classList.add('directoryBox');
 		parent.appendChild(this.directoryBox);
+		this.browseButtonBox = document.createElement('div');
+		this.browseButtonBox.classList.add("browseButtonBox");
+		this.directoryBox.appendChild(this.browseButtonBox)
+
+		this.backButton = document.createElement('button');
+		this.backButton.innerText = "back";
+		this.backButton.classList.add('backButton')
+		this.backButton.addEventListener('click', () => {
+			this.navigateBack()
+
+		})
+		this.browseButtonBox.appendChild(this.backButton)
 
 		this.getFilesButton = document.createElement('button');
 		this.getFilesButton.addEventListener('click', () => {
 			this.retreiveData('./src/assets/audio')
 		})
-		this.getFilesButton.innerText = "getstuff"
-		this.getFilesButton.classList.add('playButton')
-		this.directoryBox.appendChild(this.getFilesButton)
-		this.backButton = document.createElement('button');
-		this.backButton.innerText = "back";
-		this.backButton.classList.add('playButton')
-		this.backButton.addEventListener('click', () => {
-			this.navigateBack()
-
-		})
-		this.directoryBox.appendChild(this.backButton)
+		this.getFilesButton.innerText = "Browse"
+		this.getFilesButton.classList.add('browseButton')
+		this.browseButtonBox.appendChild(this.getFilesButton)
 	}
 	retreiveData(filePath: string, isBackNavigation = false) {
 		console.log("historyStack",this.historyStack)
@@ -80,8 +85,9 @@ export class FileBrowser {
 				fileElement.innerText = file.name; // Adjust based on your data structure
 				fileElement.classList.add('songItem')
 				fileElement.addEventListener('click', () => {
-					const songPath = `app/${file.path}/${file.name}`;
-					console.log(`app/${file.path}/${file.name}`)
+					const absolutePath = `${file.path}/${file.name}`.substring(2)
+					const songPath = `/app/${absolutePath}`
+					console.log(`/app/${absolutePath}`)
 					this.socket.emit('addSong', {songPath})
 				})
 				this.directoryBox.appendChild(fileElement);

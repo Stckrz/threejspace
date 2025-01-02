@@ -25,26 +25,46 @@ export class NowPlaying {
 		this.metadataContainer.appendChild(this.titleDiv);
 		this.metadataContainer.appendChild(this.artistDiv);
 		this.metadataContainer.appendChild(this.albumDiv);
-		this.titleDiv.textContent = "shitbutt"
 		this.getMetadata();
+
+		socket.on('currentSong', (data) => {
+			console.log('Got currentSong data Stuff:', data);
+			if (data) {
+				this.metadata = data
+				this.updateNowPlaying();
+			}
+			// return data;
+		});
 	}
 
+	// Fetch metadata from the server
 	public async getMetadata() {
 		try {
-			this.socket.emit('currentSong', (data) => {
-				this.metadata = data
-				console.log("data",data)
-				this.updateNowPlaying()
-			})
-			// const response = await fetch("http://localhost:3000/metadata");
-			// const data = await response.json();
-			// this.metadata = data;
+			this.socket.emit('currentSong', (data: Metadata) => {
+				this.metadata = data;
+				console.log("Fetched currentSong data:", data);
+				this.updateNowPlaying();
+			});
 		} catch (error) {
-			console.log(error);
+			console.log("Error fetching metadata:", error);
 		}
 	}
-	public updateNowPlaying(){
-		if(this.metadata){
+	// public async getMetadata() {
+	// 	try {
+	// 		this.socket.emit('currentSong', (data) => {
+	// 			this.metadata = data
+	// 			console.log("data",data)
+	// 			this.updateNowPlaying()
+	// 		})
+	// const response = await fetch("http://localhost:3000/metadata");
+	// const data = await response.json();
+	// this.metadata = data;
+	// 	} catch (error) {
+	// 		console.log(error);
+	// 	}
+	// }
+	public updateNowPlaying() {
+		if (this.metadata) {
 			this.titleDiv.textContent = this.metadata.title;
 			this.artistDiv.textContent = this.metadata.artist;
 			this.albumDiv.textContent = this.metadata.album;

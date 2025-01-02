@@ -49,10 +49,13 @@ thingbox.classList.add('thingbox')
 ui.appendChild(thingbox)
 
 
-const audioController = new AudioController(ui)
 const nowPlaying = new NowPlaying(thingbox, socket)
+const audioController = new AudioController(thingbox)
 nowPlaying.setupListeners(audioController.audioPlayer);
-const fileBrowser = new FileBrowser(thingbox, socket)
+const fileBrowserContainer = document.createElement('div')
+fileBrowserContainer.classList.add('fileBrowserContainer')
+ui.appendChild(fileBrowserContainer)
+const fileBrowser = new FileBrowser(fileBrowserContainer, socket)
 
 /////////////////////////////////////////////////UI///////////////////////////////////////////
 
